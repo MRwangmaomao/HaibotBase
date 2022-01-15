@@ -2,6 +2,8 @@
 #include <serial/serial.h>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <boost/bind.hpp>
 
 #include <geometry_msgs/Twist.h>
 
@@ -9,10 +11,53 @@
 
 using namespace std;
 
+serial::Serial sp;
 
-void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
+union SpeedData {
+    int16_t data;
+    uint8_t mem[2];
+};
+
+string toHex(uint8_t number)
 {
-    //ROS_INFO("I heard: [%f]", msg->linear.x);
+    char hexes[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    string hex = "";
+    uint8_t nibble;
+    do {
+        nibble = number & 0x0f;
+        number = number >> 4;
+        hex = hexes[nibble] + hex;
+    } while(number);
+    if (hex.length() == 1) {
+        hex = "0" + hex;
+    }
+    hex = "0x" + hex + "  ";
+    return hex;
+}
+
+void DumpBuffer(uint8_t *buffer, int len)
+{
+    
+    string bufferStr;
+    for (int i = 0; i < len; i++) {
+        bufferStr += toHex(buffer[i]);
+    }
+    std::cout << bufferStr << endl;
+}
+
+void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
+{
+    HaibotSerial serialObj = HaibotSerial();
+    const unsigned int BUFFER_LENGTH = 13;
+    uint8_t buffer[BUFFER_LENGTH] = { 0x20, 0x10, 0x00, 0x06, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    union SpeedData speedLeft;
+    speedLeft.data = static_cast<int16_t>(500 * (msg->linear.x));
+    union SpeedData speedRight;
+    speedRight.data = static_cast<int16_t>(500 * (msg->linear.x));
+        
+    serialObj.setSpeed(speedLeft.mem, speedRight.mem, buffer, BUFFER_LENGTH);
+    DumpBuffer(buffer, BUFFER_LENGTH);
+    sp.write(buffer, BUFFER_LENGTH);
 }
 
 
@@ -21,8 +66,8 @@ void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 int main(int argc, char** argv)//argc是命令行总的参数个数
 {
     ros::init(argc, argv, "serial_port");
-    //创建句柄（虽然后面没用到这个句柄，但如果不创建，运行时进程会出错）
     ros::NodeHandle n;
+
     if (argc != 3) {
         ROS_ERROR_STREAM("Please check port_id band_rate");
         return -1;
@@ -31,7 +76,7 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
     int bandRate = std::atoi(argv[2]);
 
     //创建一个serial类
-    serial::Serial sp;
+    //serial::Serial sp;
     //创建timeout
     serial::Timeout to = serial::Timeout::simpleTimeout(100);
     //设置要打开的串口名称
@@ -64,20 +109,20 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
     ros::Rate loop_rate(500);
     while (ros::ok()) {
         //获取缓冲区内的字节数
-        size_t n = sp.available();
-        if (n != 0) {
-            uint8_t buffer[1024];
-            //读出数据
-            n = sp.read(buffer, n);
+        //size_t n = sp.available();
+        //if (n != 0) {
+        //    uint8_t buffer[1024];
+        //    //读出数据
+        //    n = sp.read(buffer, n);
 
-            for (int i = 0; i < n; i++) {
+        //    for (int i = 0; i < n; i++) {
                 //16进制的方式打印到屏幕
-                std::cout << std::hex << (buffer[i] & 0xff) << " ";
-            }
-            std::cout << std::endl;
+        //        std::cout << std::hex << (buffer[i] & 0xff) << " ";
+        //    }
+        //    std::cout << std::endl;
             //把数据发送回去
-            sp.write(buffer, n);
-        }
+        //    sp.write(buffer, n);
+       // }
         loop_rate.sleep();
         ros::spinOnce();
     }

@@ -14,7 +14,7 @@ HaibotSerial::~HaibotSerial()
 
 }
 
-void HaibotSerial::getVoltage(float &voltage, unsigned char *ptr)
+void HaibotSerial::getVoltage(float &voltage, uint8_t *ptr)
 {
     unsigned short crc_res = crc16BitByBit(ptr, 5);
     if(ptr[5] == crc_res%256 && ptr[6] == crc_res/256) {
@@ -25,7 +25,7 @@ void HaibotSerial::getVoltage(float &voltage, unsigned char *ptr)
     }
 }
 
-void HaibotSerial::getImu(float (&imu)[9], unsigned char *ptr)
+void HaibotSerial::getImu(float (&imu)[9], uint8_t *ptr)
 {
     unsigned short crc_res = crc16BitByBit(ptr, 21);
     if(ptr[21] == crc_res%256 && ptr[22] == crc_res/256) {
@@ -55,27 +55,29 @@ void HaibotSerial::getImu(float (&imu)[9], unsigned char *ptr)
 }
 
 
-void HaibotSerial::setSpeed(unsigned char left_speed, unsigned char right_speed, unsigned char *ptr)
+void HaibotSerial::setSpeed(uint8_t leftSpeed[2], uint8_t rightSpeed[2], uint8_t *ptr, int ptrLen)
 {
-    ptr[8] = left_speed;
-    ptr[10] = right_speed;
+    ptr[7] = leftSpeed[1];
+    ptr[8] = leftSpeed[0];
+    ptr[9] = rightSpeed[1];
+    ptr[10] = rightSpeed[0];
     unsigned short crc_res = crc16BitByBit(ptr, 11);
-    ptr[11] = crc_res%256;
-    ptr[12] = crc_res/256;
+    ptr[11] = crc_res % 256;
+    ptr[12] = crc_res / 256;
 }
 
-void HaibotSerial::shotDown(unsigned char delay_s, unsigned char *ptr)
+void HaibotSerial::shotDown(uint8_t delay_s, uint8_t *ptr)
 {
     ptr[5] = delay_s;
-    unsigned short crc_res = crc16BitByBit(ptr, 6);
+    uint8_t crc_res = crc16BitByBit(ptr, 6);
     ptr[6] = crc_res%256;
     ptr[7] = crc_res/256;
 }
 
-unsigned short HaibotSerial::crc16BitByBit(unsigned char *ptr, unsigned short len)
+unsigned short HaibotSerial::crc16BitByBit(uint8_t *ptr, unsigned short len)
 {
     const unsigned short polynom = 0xA001;
-    unsigned char i;
+    uint8_t i;
     unsigned short crc = 0xffff;
 
     if (len == 0) {
