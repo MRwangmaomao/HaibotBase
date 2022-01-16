@@ -1,0 +1,8 @@
+<launch>
+  <!--serial communication between mcu and nano via usb /-->
+  <node name="haibot_serial_node" pkg="haibot_serial" type="haibot_serial_node"
+    args="/dev/ttyUSB0 115200">
+  </node>
+
+</launch>
+ 

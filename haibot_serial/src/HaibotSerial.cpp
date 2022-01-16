@@ -66,10 +66,11 @@ void HaibotSerial::setSpeed(uint8_t leftSpeed[2], uint8_t rightSpeed[2], uint8_t
     ptr[12] = crc_res / 256;
 }
 
-void HaibotSerial::shotDown(uint8_t delay_s, uint8_t *ptr)
+void HaibotSerial::shotDown(uint8_t delay_s[2], uint8_t *ptr)
 {
-    ptr[5] = delay_s;
-    uint8_t crc_res = crc16BitByBit(ptr, 6);
+    ptr[4] = delay_s[1];
+    ptr[5] = delay_s[0];
+    unsigned short crc_res = crc16BitByBit(ptr, 6);
     ptr[6] = crc_res%256;
     ptr[7] = crc_res/256;
 }

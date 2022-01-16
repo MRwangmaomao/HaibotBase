@@ -6,6 +6,7 @@
 #include <boost/bind.hpp>
 
 #include <geometry_msgs/Twist.h>
+#include <haibot_serial/Shutdown.h>
 
 #include "HaibotSerial.h"
 
@@ -13,7 +14,7 @@ using namespace std;
 
 serial::Serial sp;
 
-union SpeedData {
+union UnionData {
     int16_t data;
     uint8_t mem[2];
 };
@@ -50,9 +51,9 @@ void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
     HaibotSerial serialObj = HaibotSerial();
     const unsigned int BUFFER_LENGTH = 13;
     uint8_t buffer[BUFFER_LENGTH] = { 0x20, 0x10, 0x00, 0x06, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    union SpeedData speedLeft;
+    union UnionData speedLeft;
     speedLeft.data = static_cast<int16_t>(100 * (msg->linear.x + msg->angular.z * 0.1));
-    union SpeedData speedRight;
+    union UnionData speedRight;
     speedRight.data = static_cast<int16_t>(-100 * (msg->linear.x - msg->angular.z * 0.1));
         
     serialObj.setSpeed(speedLeft.mem, speedRight.mem, buffer, BUFFER_LENGTH);
@@ -60,7 +61,17 @@ void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
     sp.write(buffer, BUFFER_LENGTH);
 }
 
-
+void ShutDownCallback(const haibot_serial::Shutdown::ConstPtr &msg)
+{
+    HaibotSerial serialObj = HaibotSerial();
+    const unsigned int BUFFER_LENGTH = 8;
+    uint8_t buffer[BUFFER_LENGTH] = { 0x20, 0x06, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00 };
+    union UnionData delayTime;
+    delayTime.data = static_cast<int16_t>(msg->delay_time);
+    serialObj.shotDown(delayTime.mem, buffer);
+    DumpBuffer(buffer, BUFFER_LENGTH);
+    sp.write(buffer, BUFFER_LENGTH);
+}
 
 // haibot_serial_node "/dev/ttyUSB0" 115200
 int main(int argc, char** argv)//argc是命令行总的参数个数
@@ -87,7 +98,7 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
     sp.setTimeout(to);
 
     ros::Subscriber velSub = n.subscribe("/cmd_vel", 100, CmdVelCallback);
-    
+    ros::Subscriber shutDownSub = n.subscribe("/shutdown", 10, ShutDownCallback);
     try {
         //打开串口
         sp.open();
