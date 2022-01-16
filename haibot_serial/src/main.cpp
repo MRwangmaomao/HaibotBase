@@ -51,12 +51,12 @@ void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
     const unsigned int BUFFER_LENGTH = 13;
     uint8_t buffer[BUFFER_LENGTH] = { 0x20, 0x10, 0x00, 0x06, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     union SpeedData speedLeft;
-    speedLeft.data = static_cast<int16_t>(500 * (msg->linear.x));
+    speedLeft.data = static_cast<int16_t>(100 * (msg->linear.x + msg->angular.z * 0.1));
     union SpeedData speedRight;
-    speedRight.data = static_cast<int16_t>(500 * (msg->linear.x));
+    speedRight.data = static_cast<int16_t>(-100 * (msg->linear.x - msg->angular.z * 0.1));
         
     serialObj.setSpeed(speedLeft.mem, speedRight.mem, buffer, BUFFER_LENGTH);
-    DumpBuffer(buffer, BUFFER_LENGTH);
+    //DumpBuffer(buffer, BUFFER_LENGTH);
     sp.write(buffer, BUFFER_LENGTH);
 }
 
