@@ -1,0 +1,15 @@
+<launch>
+    <!--serial communication between mcu and nano via usb /-->
+    <include file="$(find haibot_serial)/launch/bringup.launch" />
+
+    <!--rgbd camera launch /-->
+    <include file="$(find astra_camera)/launch/stereo_s.launch" />
+
+    <!--rgbd camera launch /-->
+    <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+
+    <!-- 在rviz中显示-->
+    <node name="rviz" pkg="rviz" type="rviz" 
+    args="-d $(find haibot_tools)/config/haibot.rviz" required="true" />
+</launch>
+ 
