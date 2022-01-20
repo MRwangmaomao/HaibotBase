@@ -5,6 +5,7 @@
 #include <sstream>
 #include <boost/bind.hpp>
 
+#include <sensor_msgs/Imu.h>
 #include <geometry_msgs/Twist.h>
 #include <haibot_serial/Shutdown.h>
 
@@ -117,12 +118,23 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
         return -1;
     }
 
-    ros::Rate loop_rate(500);
+    uint8_t voltageReqBuffer[8] = { 0x20, 0x03, 0x00, 0x32, 0x00, 0x01, 0x23, 0x74 };
+    uint8_t imuReqBuffer[8] = { 0x20, 0x03, 0x00, 0x38, 0x00, 0x09, 0x02, 0xB0 };
+    uint8_t voltageCount = 10;
+    uint8_t counterIter = 0;
+    ros::Rate loop_rate(50);
     while (ros::ok()) {
+        counterIter++;
+        if (counterIter >= voltageCount) {
+            counterIter =0;
+            sp.write(voltageReqBuffer, 8);
+            uint8_t voltageffer[1024] = { 0 };
+            sp.read(voltageffer, 20);
+        }
         //获取缓冲区内的字节数
         //size_t n = sp.available();
         //if (n != 0) {
-        //    uint8_t buffer[1024];
+        //    
         //    //读出数据
         //    n = sp.read(buffer, n);
 
@@ -132,7 +144,9 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
         //    }
         //    std::cout << std::endl;
             //把数据发送回去
-        //    sp.write(buffer, n);
+        sp.write(imuReqBuffer, 8);
+        uint8_t imubuffer[1024] = { 0 };
+        sp.read(imubuffer, 20);
        // }
         loop_rate.sleep();
         ros::spinOnce();
