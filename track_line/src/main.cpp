@@ -1,12 +1,18 @@
-#include "image_follow_line/image_follow_line.h"
+
+
+#include <thread>
+#include <ros/console.h>
+#include <time.h>
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <thread>
+#include <opencv2/imgproc/types_c.h>
+
 #include "filter_line/utils.h"
 #include "filter_line/vincent_soille_watershed.h"
-#include <ros/console.h>
-#include <time.h> 
+#include "image_follow_line/image_follow_line.h"
+
 using namespace cv;
 using namespace std;
 
@@ -60,7 +66,7 @@ void imregionalmin(cv::Mat& img, cv::Mat& out_img)
 {
     // pad the border of img with 1 and copy to img_pad
     cv::Mat img_pad;
-    cv::copyMakeBorder(img, img_pad, 1, 1, 1, 1, IPL_BORDER_CONSTANT, 1);
+    cv::copyMakeBorder(img, img_pad, 1, 1, 1, 1, BORDER_CONSTANT, 1);
 
     //  initialize binary output to 2, unknown if min
     out_img = cv::Mat::ones(img.rows, img.cols, CV_8U)+2;
@@ -454,12 +460,12 @@ void drawline(cv::Mat src_image, cv::Vec4f fitline )
 
         double k_line = fitline[1]/fitline[0];
         Point p1(0,k_line*(0 - fitline[2]) + fitline[3]);
-        Point p2(img_width - 1,k_line*(img_width - 1 - fitline[2]) + fitline[3]);
+        Point p2(img_width - 1, k_line*(img_width - 1 - fitline[2]) + fitline[3]);
 
 
         char text_equation[1024];
-        sprintf(text_equation,"y-%.2f=%.2f(x-%.2f)",fitline[3],k_line,fitline[2]);
-        putText(src_image,text_equation,Point(30,50),CV_FONT_HERSHEY_COMPLEX,0.5,Scalar(0,0,255),1,8);
+        sprintf(text_equation,"y-%.2f=%.2f(x-%.2f)", fitline[3], k_line, fitline[2]);
+        putText(src_image, text_equation, Point(30,50), FONT_HERSHEY_COMPLEX, 0.5, Scalar(0,0,255), 1, 8);
 
         line(src_image,p1,p2,Scalar(0,0,255),2);
         imshow("re", src_image);
@@ -479,10 +485,10 @@ void drawlines(cv::Mat src_image, vector<Point> contours_ploy, std::vector<cv::V
             continue;
         double k_line = fitline[1]/fitline[0];
         char text_equation[1024];
-        sprintf(text_equation,"y-%.2f=%.2f(x-%.2f)",fitline[3],k_line,fitline[2]);
+        sprintf(text_equation, "y-%.2f=%.2f(x-%.2f)", fitline[3], k_line, fitline[2]);
         cv::Point pm = (contours_ploy[i]+contours_ploy[i+1])*0.5;
-        putText(src_image,text_equation, pm,CV_FONT_HERSHEY_COMPLEX,0.5,Scalar(0,0,255),1,8);
-        line(src_image,contours_ploy[i],contours_ploy[i+1],Scalar(0,0,255),2);
+        putText(src_image, text_equation, pm, FONT_HERSHEY_COMPLEX, 0.5, Scalar(0,0,255), 1, 8);
+        line(src_image, contours_ploy[i], contours_ploy[i+1], Scalar(0,0,255), 2);
     }
     imshow("re", src_image);
     cv::waitKey(10);
@@ -656,7 +662,7 @@ double imagelinefit_simplethresh(cv::Mat im, cv::Mat grayscaleImage)
         Vec4f fitline;
 
         //拟合方法采用最小二乘法
-        cv::fitLine(pcur, fitline, CV_DIST_L2,0,0.01,0.01);
+        cv::fitLine(pcur, fitline, DIST_L2,0,0.01,0.01);
         fitlines.push_back(fitline);
     }
        drawlines(im, contours_ploy, fitlines);

@@ -1,12 +1,17 @@
-#include "image_follow_line/image_follow_line.h"
+
+#include <time.h>
+#include <thread>
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <thread>
-#include "filter_line/utils.h"
-#include "filter_line/vincent_soille_watershed.h"
+#include <opencv2/imgproc/types_c.h>
 #include <ros/console.h>
-#include <time.h> 
+
+
+#include "filter_line/utils.h"
+#include "image_follow_line/image_follow_line.h"
+#include "filter_line/vincent_soille_watershed.h"
 
 using namespace cv;
 using namespace std;
@@ -194,7 +199,7 @@ void drawlines(cv::Mat src_image, vector<Point> contours_ploy, std::vector<cv::V
         char text_equation[1024];
         sprintf(text_equation,"y-%.2f=%.2f(x-%.2f)",fitline[3],k_line,fitline[2]);
         cv::Point pm = (contours_ploy[i]+contours_ploy[i+1])*0.5;
-        putText(src_image,text_equation, pm,CV_FONT_HERSHEY_COMPLEX,0.5,Scalar(0,0,255),1,8);
+        putText(src_image,text_equation, pm,FONT_HERSHEY_COMPLEX,0.5,Scalar(0,0,255),1,8);
         line(src_image,contours_ploy[i],contours_ploy[i+1],Scalar(0,0,255),2);
     }
     imshow("re", src_image);
@@ -267,16 +272,16 @@ double warnng_line_recognition(cv::Mat im, cv::Mat grayscaleImage){
     for(int i=0;i<Icontour.size();i++)  
     {  
         black_mat = Mat(im.size(), CV_8UC1,Scalar(0)); 
-        drawContours(black_mat,Icontour,i,Scalar(255),CV_FILLED,8,hierarchy);
+        drawContours(black_mat,Icontour,i,Scalar(255),FILLED,8,hierarchy);
         cv::threshold(black_mat, black_mat, 125, 255, cv::THRESH_BINARY);
         int cover_size = cv::countNonZero(black_mat|mask_yellow);
         if(cv::countNonZero(black_mat&mask_yellow) > 1500)
-            drawContours(im,Icontour,i,Scalar(255,0,0),CV_FILLED,8,hierarchy);
+            drawContours(im,Icontour,i,Scalar(255,0,0),FILLED,8,hierarchy);
 
         if(cv::countNonZero(black_mat&mask_yellow) > 1000)
         {
-            drawContours(im,Icontour,i,Scalar(255,0,0),CV_FILLED,8,hierarchy);
-            drawContours(warning_line,Icontour,i,Scalar(255,0,0),CV_FILLED,8,hierarchy);
+            drawContours(im,Icontour,i,Scalar(255,0,0),FILLED,8,hierarchy);
+            drawContours(warning_line,Icontour,i,Scalar(255,0,0),FILLED,8,hierarchy);
         } 
     }
     cv::threshold(warning_line, warning_line, 125, 255, cv::THRESH_BINARY); 
@@ -314,7 +319,7 @@ double warnng_line_recognition(cv::Mat im, cv::Mat grayscaleImage){
             pcur.push_back(contours_ploy[i+1]);
             Vec4f fitline;
             //拟合方法采用最小二乘法
-            cv::fitLine(pcur, fitline, CV_DIST_L2,0,0.01,0.01);
+            cv::fitLine(pcur, fitline, DIST_L2,0,0.01,0.01);
             fitlines.push_back(fitline);
         }
         if(failed_flag)
