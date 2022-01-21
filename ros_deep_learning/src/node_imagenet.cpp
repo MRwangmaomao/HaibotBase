@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 		// create network using custom model paths
 		net = imageNet::Create(prototxt_path.c_str(), model_path.c_str(),
 						   NULL, class_labels_path.c_str(), 
-						   input_blob.c_str(), output_blob.c_str());
+						   input_blob.c_str(), output_blob.c_str(),precision=TYPE_FP16);
 
 	}
 	else
