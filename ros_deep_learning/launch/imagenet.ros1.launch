@@ -24,7 +24,7 @@
 	<arg name="output_blob" default=""/>
 
 	<node pkg="ros_deep_learning" type="imagenet" name="imagenet" output="screen">
-		<remap from="/imagenet/image_in" to="/video_source/raw"/>
+		<remap from="/imagenet/image_in" to="/camera/rgb/raw_iamge"/>
 		<param name="model_name" value="$(arg model_name)"/>
 		<param name="model_path" value="$(arg model_path)"/>
 		<param name="prototxt_path" value="$(arg prototxt_path)"/>
