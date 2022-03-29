@@ -1,4 +1,4 @@
 <launch>
   <!-- Start RViz with custom view -->
-  <node pkg="rviz" type="rviz" name="show_rviz" args="-d $(find cartographer_slam_core)/rviz/demo.rviz"/>    
+  <node pkg="rviz" type="rviz" name="show_rviz" args="-d $(find cartographer_slam_core)/rviz/default.rviz"/>    
 </launch>
