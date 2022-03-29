@@ -11,8 +11,8 @@
     <!--laser launch /-->
     <include file="$(find rplidar_ros)/launch/rplidar.launch" />
 
-    <!--laser launch /-->
-    <include file="/home/robot/catkin_ws/src/haibot_tools/launch/car.launch" />
+    <!--car urdf /-->
+    <include file="$(find haibot_tools)/launch/car.launch" />
 
     <!--robot base to laser/-->
     <!-- <node pkg="tf" type="static_transform_publisher" name="laser_broadcaster" args="0.02 0 0.1 0 0 0 base_link laser 10" /> -->

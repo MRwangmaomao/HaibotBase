@@ -229,10 +229,10 @@ int main(int argc, char** argv)//argc是命令行总的参数个数
                 n = sp.read(buffer_get_imu, n);
                 if (serialObj.getImu(imu_buffer, buffer_get_imu)) {
                     sensor_msgs::Imu imu_msg;
-                    ROS_INFO_STREAM(" ax: " << imu_buffer[0] << ",  ay: " << imu_buffer[1] << ",  az: " << imu_buffer[2]
-                        << ",  gx: " << imu_buffer[3] << ",  gy: " << imu_buffer[4] << ",  gz: " << imu_buffer[5]
-                        << ",  pitch: " << imu_buffer[6] << ",  roll: " << imu_buffer[7] << ",  yaw: " << imu_buffer[8]);
-                    DumpBuffer(buffer_get_imu, n);
+                    // ROS_INFO_STREAM(" ax: " << imu_buffer[0] << ",  ay: " << imu_buffer[1] << ",  az: " << imu_buffer[2]
+                    //     << ",  gx: " << imu_buffer[3] << ",  gy: " << imu_buffer[4] << ",  gz: " << imu_buffer[5]
+                    //     << ",  pitch: " << imu_buffer[6] << ",  roll: " << imu_buffer[7] << ",  yaw: " << imu_buffer[8]);
+                    // DumpBuffer(buffer_get_imu, n);
                     imu_msg.header.stamp = ros::Time::now();
                     imu_msg.header.frame_id = "imu_link";
                     imu_msg.linear_acceleration.x = imu_buffer[0];
