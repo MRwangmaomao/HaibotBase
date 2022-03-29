@@ -2,8 +2,8 @@
     <arg name="scan_topic" default="/scan" />
  
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen" clear_params="true">
-        <param name="odom_frame" value="odom"/>		设置要订阅的里程计信息在那一个坐标系下的，里程计的坐标系一般是odom坐标系。
-        <param name="map_update_interval" value="0.1"/>		地图的更新频率，0.1秒钟更新一次地图
+        <param name="odom_frame" value="/odom"/>		设置要订阅的里程计信息在那一个坐标系下的,里程计的坐标系一般是odom坐标系。
+        <param name="map_update_interval" value="0.1"/>		地图的更新频率, 0.1秒钟更新一次地图
         <!-- Set maxUrange < actual maximum range of the Laser -->
         <param name="maxRange" value="8.0"/>	最大范围5米
         <param name="maxUrange" value="8.0"/>	激光雷达所检测的最大范围4.5米
@@ -36,7 +36,6 @@
         <remap from="scan" to="$(arg scan_topic)"/>
     </node>
     
-    <node pkg="tf" type="static_transform_publisher" name="odom_pub" args="0 0 0 0 0 0 odom base_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="odom_pub" args="0 0 0 0 0 0 /odom /base_footprint 10" />
 
 </launch>
-

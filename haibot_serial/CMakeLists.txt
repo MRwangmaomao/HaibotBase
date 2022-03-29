@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   serial
+  sensor_msgs
   geometry_msgs
   message_generation
 )

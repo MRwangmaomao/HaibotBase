@@ -3,7 +3,7 @@ project(apriltag_ros)
 
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED PATHS /usr/include/opencv4)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(catkin REQUIRED
              COMPONENTS roscpp

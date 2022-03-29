@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  urdf
+  xacro
   haibot_serial
 )
 
@@ -162,6 +164,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/keyboard.py
+  scripts/shutrobot.py
+  scripts/draw_circle.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

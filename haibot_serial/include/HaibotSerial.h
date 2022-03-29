@@ -5,17 +5,19 @@
 #ifndef HAIBOT_SERIAL_HAIBOTSERIAL_H
 #define HAIBOT_SERIAL_HAIBOTSERIAL_H
 
+typedef unsigned char uint8_t;
+
 class HaibotSerial
 {
 public:
     HaibotSerial();
     ~HaibotSerial();
-    void getVoltage(float &voltage, unsigned char *ptr);
-    void getImu(float (&imu)[9], unsigned char *ptr);
-    void setSpeed(unsigned char left_speed, unsigned char right_speed, unsigned char *ptr);
-    void shotDown(unsigned char delay_s, unsigned char *ptr);
+    void getVoltage(float &voltage, uint8_t *ptr);
+    void getImu(float (&imu)[9], uint8_t *ptr);
+    void setSpeed(uint8_t leftSpeed[2], uint8_t rightSpeed[2], uint8_t *ptr, int ptrLen);
+    void shotDown(uint8_t delay_s[2], uint8_t *ptr);
 private:
-    unsigned short crc16BitByBit(unsigned char *ptr, unsigned short len);
+    unsigned short crc16BitByBit(uint8_t *ptr, unsigned short len);
 
 };
 

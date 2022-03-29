@@ -25,33 +25,40 @@ void HaibotSerial::getVoltage(float &voltage, uint8_t *ptr)
     }
 }
 
-void HaibotSerial::getImu(float (&imu)[9], uint8_t *ptr)
+bool HaibotSerial::getImu(float (&imu)[9], uint8_t *ptr)
 {
     unsigned short crc_res = crc16BitByBit(ptr, 21);
     if(ptr[21] == crc_res%256 && ptr[22] == crc_res/256) {
-        unsigned int tmp = ptr[3];
-        imu[0] = (float)(tmp * 256 + ptr[4]) / 100;
-        tmp = ptr[5];
-        imu[2] = (float)(tmp * 256 + ptr[6]) / 100;
-        tmp = ptr[7];
-        imu[3] = (float)(tmp * 256 + ptr[8]) / 100;
-        tmp = ptr[7];
-        imu[4] = (float)(tmp * 256 + ptr[10]) / 100;
-        tmp = ptr[11];
-        imu[5] = (float)(tmp * 256 + ptr[12]) / 100;
-        tmp = ptr[13];
-        imu[6] = (float)(tmp * 256 + ptr[14]) / 100;
+        char tmp = (char)ptr[3];
+        
+        imu[0] = (float)((int)(((unsigned int)ptr[3]<<8) | ptr[4])) / 32768 * 9.8 / 2; // ax
+        imu[1] = (float)((int)(((unsigned int)ptr[5]<<8) | ptr[6])) / 32768 * 9.8 / 2; // ay
+        imu[2] = (float)((int)(((unsigned int)ptr[7]<<8) | ptr[8])) / 32768 * 9.8 / 2; // az
+
+        imu[3] = (float)((int)(((unsigned int)ptr[9]<<8) | ptr[10])) / 32768 / 2000;  // gx
+        imu[4] = (float)((int)(((unsigned int)ptr[11]<<8) | ptr[12])) / 32768 / 2000; // gy
+        imu[5] = (float)((int)(((unsigned int)ptr[13]<<8) | ptr[14])) / 32768 / 2000; // gz
+
+        // angle
         tmp = ptr[15];
-        imu[7] = (float)(tmp * 256 + ptr[16]) / 100;
-        tmp = ptr[17];
-        imu[8] = (float)(tmp * 256 + ptr[18]) / 100;
-        tmp = ptr[19];
-        imu[9] = (float)(tmp * 256 + ptr[20]) / 100;
-    } else {
-        for (float & i : imu) {
-            i = 9999;
+        imu[6] = (float)(tmp * 256 + ptr[16]) / 100;
+        if (imu[6] > 565) {
+            imu[6] = imu[6] - 656;
         }
+        tmp = ptr[17];
+        imu[7] = (float)(tmp * 256 + ptr[18]) / 100;
+        if (imu[7] > 565) {
+            imu[7] = imu[7] - 656;
+        }
+        tmp = ptr[19];
+        imu[8] = (float)(tmp * 256 + ptr[20]) / 100;
+        if (imu[8] > 180) {
+            imu[8] = imu[8] - 656;
+        }
+    } else {
+        return false;
     }
+    return true;
 }
 
 

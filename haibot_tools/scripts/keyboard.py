@@ -110,19 +110,19 @@ if __name__=="__main__":
             target_turn = turn * th
 
             # 速度限位，防止速度增减过快
-            # if target_speed > control_speed:
-            #     control_speed = min( target_speed, control_speed + 0.1 )
-            # elif target_speed < control_speed:
-            #     control_speed = max( target_speed, control_speed - 0.1 )
-            # else:
-            #     control_speed = target_speed
+            if target_speed > control_speed:
+                control_speed = min( target_speed, control_speed + 0.1 )
+            elif target_speed < control_speed:
+                control_speed = max( target_speed, control_speed - 0.1 )
+            else:
+                control_speed = target_speed
 
-            # if target_turn > control_turn:
-            #     control_turn = min( target_turn, control_turn + 0.5 )
-            # elif target_turn < control_turn:
-            #     control_turn = max( target_turn, control_turn - 0.5 )
-            # else:
-            #     control_turn = target_turn
+            if target_turn > control_turn:
+                control_turn = min( target_turn, control_turn + 0.5 )
+            elif target_turn < control_turn:
+                control_turn = max( target_turn, control_turn - 0.5 )
+            else:
+                control_turn = target_turn
 
             # 创建并发布twist消息
             twist = Twist()
