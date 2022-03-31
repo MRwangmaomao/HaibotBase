@@ -1,15 +1,7 @@
 #!/bin/bash
 
-sudo chmod 777 /dev/ttyACM0
-expect "password"
-send "123456\r"
-
 {
-	gnome-terminal -t "ros" -x bash -c "roscore;exec bash"
-}&
-sleep 5s
-{
-	gnome-terminal -t "pudu_serial" -x bash -c "rosrun pudu_serial serial_write;exec bash"
+	gnome-terminal -t "haibot_serial" -x bash -c "roslaunch haibot_serial bringup.launch;exec bash"
 }&
 sleep 1s
 {

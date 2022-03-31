@@ -24,6 +24,18 @@ roslaunch cartographer_slam_core haibot_cartographer.launch
 roslaunch nav move_base.launch
 ```
 
+其他常用命令：
+
+键盘遥控：
+```bash
+rosrun haibot_tools keyboard.py
+```
+
+机器人画圆
+```bash
+rosrun haibot_tools circle_run.py
+```
+
 ## 2 使用PC连接机器人
 确保机器人和PC在一个局域网络内，查看机器人的IP地址，比如我们的机器人的IP为192.168.1.105。
 
@@ -35,10 +47,21 @@ ssh robot@192.168.1.105
 然后就可以参照上面的步骤来控制机器人启动并完成建图与导航。
 
 ## 3 深度学习demo
-
-
+使用usb相机，接到机器人的usb口上。使用如下命令启动深度学习视频分析任务。
+```bash
+roslaunch ros_deep_learning detectnet.ros1.launch
+```
 
 ## 4 循迹denmo
+使用usb相机，接到机器人的usb口上。使用如下命令启动小车循迹任务。
+```bash
+roscd track_line/script
+sh bringup.sh
+```
 
 
 ## 5 二维码识别demo
+使用usb相机，接到机器人的usb口上。使用如下命令启动二维码识别任务。
+```bash
+roslaunch apriltag_ros detector.launch
+```
